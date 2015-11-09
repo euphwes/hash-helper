@@ -68,29 +68,49 @@ def get_file_hash(target, which_hash):
         return perform_hashlib_hash(func, target)
 
     elif which_hash == 'adler32':
-        hash_sum = 1
-        with open(target, 'rb') as f:
-            while True:
-                data = f.read(BLOCK_SIZE)
-                if not data:
-                    break
-                hash_sum = z.adler32(data, hash_sum)
-                if hash_sum < 0:
-                    hash_sum += 2**32
-            return format(hash_sum, 'x')
+        return perform_adler32_hash(target)
 
     elif which_hash == 'crc32':
+        return perform_crc32_hash(target)
+
+
+def perform_crc32_hash(target):
+    """
+    Perform the CRC32 hash against the target file. Return the result in hexadecimal form.
+    """
+
+    with open(target, 'rb') as target:
         prev = 0
-        for line in open(target, 'rb'):
+        for line in target:
             prev = z.crc32(line, prev)
+
         return format(prev & 0xFFFFFFFF, 'x')
+
+
+def perform_adler32_hash(target):
+    """
+    Perform the Adler32 hash against the target file. Return the result in hexadecimal form.
+    """
+
+    hash_sum = 1
+    with open(target, 'rb') as target:
+
+        while True:
+            data = target.read(BLOCK_SIZE)
+            if not data:
+                break
+            hash_sum = z.adler32(data, hash_sum)
+            if hash_sum < 0:
+                hash_sum += 2**32
+
+        return format(hash_sum, 'x')
 
 
 def perform_hashlib_hash(hash_function, target):
     """
     Since all the hashing functions from hashlib in the sdlib work the same, this is simple
     wrapper function around them. Reads raw file contents a chunk at a time, passes them
-    through the hashing algorithm, and returns the result.
+    through the hashing algorithm, and returns the result in hexadecimal form.
     """
 
     hash = hash_function()
@@ -109,7 +129,7 @@ if __name__ == '__main__':
 
     args = PyHashHelperParser().parse_args()
 
-    if not (args.file or args.string):
+    if not args.file or args.string:
         print('\nMust provide either a file or a string literal to be hashed.')
         sys.exit(2)
 
