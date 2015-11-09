@@ -40,6 +40,9 @@ def get_string_hash(target, which_hash):
     Runs the target string through the desired hashing function. Ensures a hex result is returned.
     """
 
+    # must encode Unicode objects to bytes before they can be hashed
+    target = target.encode('utf-8')
+
     function_map = dict(zip(
         ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32'],
         [h.md5, h.sha1, h.sha224, h.sha256, h.sha384, h.sha512, z.adler32, z.crc32]
@@ -134,7 +137,7 @@ if __name__ == '__main__':
         sys.exit(2)
 
     if args.string:
-        hashed = get_string_hash(args.string.encode('utf-8'), args.hash)
+        hashed = get_string_hash(args.string, args.hash)
     else:
         hashed = get_file_hash(args.file.name, args.hash)
 
