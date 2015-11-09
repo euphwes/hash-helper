@@ -3,31 +3,31 @@ import zlib as z
 import hashlib as h
 import argparse
 
-#----------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------
 
-class MyParser(argparse.ArgumentParser):
+class PyHashHelperParser(argparse.ArgumentParser):
+    """
+        Simple argparse argument parser. Takes in a target (either a string literal, or a file),
+        and the desired hashing algorithm.
+    """
+
+    def __init__(self):
+        super().__init__(description='Calculates the hash of a string literal or a file')
+
+        self.add_argument('-f', '--file', type=argparse.FileType('r'), required=False)
+        self.add_argument('-s', '--string', type=str, required=False)
+
+        hash_choices = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32']
+        self.add_argument('-x', '--hash', type=str, choices=hash_choices, required=True)
+
 
     def error(self, message):
+        """ Writes an error message, and the help message, to stderr then exits with code 2. """
         sys.stderr.write("\nError: {}\n\n".format(message))
         self.print_help()
         sys.exit(2)
 
-
-def build_parser():
-
-    description = "Displays the checksum of either a string literal or a file. "
-    description += "Possible checksum types are md5, sha1, sha224, sha256, sha384, sha512, adler32, or crc32."
-    parser = MyParser(description=description)
-
-    parser.add_argument('-f', '--file', type=argparse.FileType('r'), required=False)
-    parser.add_argument('-s', '--string', type=str, required=False)
-
-    hash_choices = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32']
-    parser.add_argument('-x', '--hash', type=str, choices=hash_choices, required=True)
-
-    return parser
-
-#----------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------
 
 def get_string_hash(target, which_hash):
 
@@ -82,8 +82,7 @@ def get_file_hash(target, which_hash):
 
 if __name__ == '__main__':
 
-    parser = build_parser()
-    args = parser.parse_args()
+    args = PyHashHelperParser().parse_args()
 
     if not (args.file or args.string):
         print('\nMust provide either a file or a string literal to be hashed.')
