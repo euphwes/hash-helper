@@ -8,9 +8,8 @@ import argparse
 class MyParser(argparse.ArgumentParser):
 
     def error(self, message):
-
-        print(); sys.stderr.write("Error: {}\n".format(message))
-        print(); self.print_help()
+        sys.stderr.write("\nError: {}\n\n".format(message))
+        self.print_help()
         sys.exit(2)
 
 #----------------------------------------------------------------------
@@ -21,7 +20,7 @@ def build_parser():
     description += "Possible checksum types are md5, sha1, sha224, sha256, sha384, sha512, Adler32, or CRC32."
     parser = MyParser(description=description)
 
-    parser.add_argument('-f', '--file', type=file, required=False)
+    parser.add_argument('-f', '--file', type=argparse.FileType('r'), required=False)
     parser.add_argument('-s', '--string', type=str, required=False)
 
     hash_choices = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32']
@@ -51,14 +50,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if not (args.file or args.string):
-        print('\nMust provide either a file or a string literal to be checksummed.')
+        print('\nMust provide either a file or a string literal to be hashed.')
         sys.exit(2)
 
-    if args.file:
-        target = args.file.read()
-    else:
-        target = args.string
+    target = args.file.read() if args.file else args.string
+    target = target.encode('utf-8')
 
-    which_hash = args.hash
-
-    print('\n' + get_hash(target, which_hash))
+    print('\n' + get_hash(target, args.hash))
