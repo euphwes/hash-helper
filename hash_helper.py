@@ -5,6 +5,10 @@ import argparse
 
 #-------------------------------------------------------------------------------------------------
 
+BLOCK_SIZE = 1024*1024*256
+
+#-------------------------------------------------------------------------------------------------
+
 class PyHashHelperParser(argparse.ArgumentParser):
     """
     Simple argparse argument parser. Takes in a target (either a string literal, or a file),
@@ -33,8 +37,7 @@ class PyHashHelperParser(argparse.ArgumentParser):
 
 def get_string_hash(target, which_hash):
     """
-    Finds the correct hashing function, and then runs the target string through it. Ensures
-    a hexadecimal result is returned.
+    Runs the target string through the desired hashing function. Ensures a hex result is returned.
     """
 
     function_map = dict(zip(
@@ -52,16 +55,23 @@ def get_string_hash(target, which_hash):
 
 
 def get_file_hash(target, which_hash):
+    """
+    Runs the target file through the desired hashing function. Ensures a hex result is returned.
+    """
 
     hashlib_flags = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512']
     hashlib_funcs = [h.md5, h.sha1, h.sha224, h.sha256, h.sha384, h.sha512]
     hashlib_map = dict(zip(hashlib_flags, hashlib_funcs))
 
-    if which_hash == 'adler32':
+    if which_hash in hashlib_flags:
+        func = hashlib_map[which_hash]
+        return perform_hashlib_hash(func, target)
+
+    elif which_hash == 'adler32':
         hash_sum = 1
         with open(target, 'rb') as f:
             while True:
-                data = f.read(2**20)
+                data = f.read(BLOCK_SIZE)
                 if not data:
                     break
                 hash_sum = z.adler32(data, hash_sum)
@@ -75,16 +85,23 @@ def get_file_hash(target, which_hash):
             prev = z.crc32(line, prev)
         return format(prev & 0xFFFFFFFF, 'x')
 
-    else:
-        func = hashlib_map[which_hash]()
-        target = open(target, 'rb')
+
+def perform_hashlib_hash(hash_function, target):
+    """
+    Since all the hashing functions from hashlib in the sdlib work the same, this is simple
+    wrapper function around them. Reads raw file contents a chunk at a time, passes them
+    through the hashing algorithm, and returns the result.
+    """
+
+    hash = hash_function()
+    with open(target, 'rb') as target:
         while True:
-            data = target.read(2**20)
+            data = target.read(BLOCK_SIZE)
             if not data:
                 break
-            func.update(data)
+            hash.update(data)
 
-        return func.hexdigest()
+        return hash.hexdigest()
 
 #----------------------------------------------------------------------
 
