@@ -129,7 +129,7 @@ if __name__ == '__main__':
 
     args = PyHashHelperParser().parse_args()
 
-    if not args.file or args.string:
+    if not (args.file or args.string):
         print('\nMust provide either a file or a string literal to be hashed.')
         sys.exit(2)
 
