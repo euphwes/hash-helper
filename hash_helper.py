@@ -7,8 +7,8 @@ import argparse
 
 class PyHashHelperParser(argparse.ArgumentParser):
     """
-        Simple argparse argument parser. Takes in a target (either a string literal, or a file),
-        and the desired hashing algorithm.
+    Simple argparse argument parser. Takes in a target (either a string literal, or a file),
+    and the desired hashing algorithm.
     """
 
     def __init__(self):
@@ -22,7 +22,9 @@ class PyHashHelperParser(argparse.ArgumentParser):
 
 
     def error(self, message):
-        """ Writes an error message, and the help message, to stderr then exits with code 2. """
+        """
+        Writes an error message and the help message to stderr then exits with error.
+        """
         sys.stderr.write("\nError: {}\n\n".format(message))
         self.print_help()
         sys.exit(2)
@@ -30,13 +32,19 @@ class PyHashHelperParser(argparse.ArgumentParser):
 #-------------------------------------------------------------------------------------------------
 
 def get_string_hash(target, which_hash):
+    """
+    Finds the correct hashing function, and then runs the target string through it. Ensures
+    a hexadecimal result is returned.
+    """
 
-    hash_flags = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32']
-    hash_funcs = [h.md5, h.sha1, h.sha224, h.sha256, h.sha384, h.sha512, z.adler32, z.crc32]
-    function_map = dict(zip(hash_flags, hash_funcs))
+    function_map = dict(zip(
+        ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32'],
+        [h.md5, h.sha1, h.sha224, h.sha256, h.sha384, h.sha512, z.adler32, z.crc32]
+    ))
 
     hash_result = function_map[which_hash](target)
 
+    # crc32 and adler32 return a numerical result. Format as hex and return
     if which_hash in ('crc32', 'adler32'):
         return format(hash_result, 'x')
 
