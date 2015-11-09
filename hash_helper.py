@@ -21,7 +21,7 @@ def build_parser():
     parser = MyParser(description=description)
 
     parser.add_argument('-f', '--file', type=file, required=False)
-    parser.add_argument('-c', '--string', type=str, required=False)
+    parser.add_argument('-s', '--string', type=str, required=False)
 
     hash_choices = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32']
     parser.add_argument('-x', '--hash', type=str, choices=hash_choices, required=True)
@@ -37,7 +37,7 @@ def get_hash(target, which_hash):
 
     hash_result = function_map[which_hash](target)
 
-    if which_hash in ('--crc32', '--adler32'):
+    if which_hash in ('crc32', 'adler32'):
         return format(hash_result, 'x')
 
     return hash_result.hexdigest()
@@ -52,9 +52,6 @@ if __name__ == '__main__':
     if not (args.file or args.string):
         print('\nMust provide either a file or a string literal to be checksummed.')
         sys.exit(2)
-
-    if not (args.hash):
-        print('\nMust provide which hash function you want to use.')
 
     if args.file:
         target = open(args.file, 'rb').read()
