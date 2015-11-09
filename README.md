@@ -11,7 +11,8 @@ Simply run the script (`hash_helper.py`), passing in the following arguments:
 * `-s [string literal]`  **or**  `-f [file name/path]`
 
 
-#### Example: hashing a string literal
+## Examples
+#### Hashing a string literal
 
 ```
 $ python hash_helper.py -s hello -x md5
@@ -21,7 +22,7 @@ $ python hash_helper.py -s "hash this string" -x sha256
 eedb752a1e7a2691ebd896ce86d868c5ddc795419be5925030cbee768153700b
 ```
 
-#### Example: hashing a file
+#### Hashing a file
 
 ```
 $ python hash_helper.py -f "hash_helper.py" -x crc32
