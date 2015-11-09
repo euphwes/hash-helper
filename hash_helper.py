@@ -8,6 +8,7 @@ import argparse
 class MyParser(argparse.ArgumentParser):
 
     def error(self, message):
+
         print(); sys.stderr.write("Error: {}\n".format(message))
         print(); self.print_help()
         sys.exit(2)
@@ -54,7 +55,7 @@ if __name__ == '__main__':
         sys.exit(2)
 
     if args.file:
-        target = open(args.file, 'rb').read()
+        target = args.file.read()
     else:
         target = args.string
 
