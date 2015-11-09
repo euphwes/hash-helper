@@ -29,7 +29,7 @@ def build_parser():
     return parser
 
 
-def get_hash(target, which_hash):
+def get_string_hash(target, which_hash):
 
     hash_flags = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32']
     hash_funcs = [hlb.md5, hlb.sha1, hlb.sha224, hlb.sha256, hlb.sha384, hlb.sha512, zlb.adler32, zlb.crc32]
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         print('\nMust provide either a file or a string literal to be hashed.')
         sys.exit(2)
 
-    target = args.file.read() if args.file else args.string
-    target = target.encode('utf-8')
+    if args.string:
+        hashed = get_string_hash(args.string.encode('utf-8'), args.hash)
 
-    print('\n' + get_hash(target, args.hash))
+    print('\n{}'.format(hashed))
