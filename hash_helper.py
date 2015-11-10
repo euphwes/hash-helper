@@ -21,7 +21,6 @@ class PyHashHelperParser(argparse.ArgumentParser):
         self.add_argument('-f', '--file', type=argparse.FileType('r'), required=False)
         self.add_argument('-s', '--string', type=str, required=False)
 
-        hash_choices = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32']
         self.add_argument('-x', '--hash', type=str, required=True)
 
 
@@ -136,8 +135,16 @@ if __name__ == '__main__':
         print('\nMust provide either a file or a string literal to be hashed.')
         sys.exit(2)
 
-    desired_hashes = args.hash.split(',')
-    justify_len = max(len(h) for h in desired_hashes)
+    desired_hashes = set(args.hash.split(','))
+    hash_options   = set(['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32'])
+
+    valid_hashes   = desired_hashes & hash_options
+    invalid_hashes = desired_hashes - hash_options
+
+    if invalid_hashes:
+        print('\nThe following hash functions are not valid: {}'.format(','.join(invalid_hashes)))
+
+    justify_len = max(len(h) for h in valid_hashes)
 
     if args.string:
         target = args.string
@@ -147,6 +154,6 @@ if __name__ == '__main__':
         target_type_func = get_file_hash
 
     print()
-    for hash_func in args.hash.split(','):
+    for hash_func in valid_hashes:
         hashed = target_type_func(target, hash_func)
         print('{}: {}'.format(hash_func.rjust(justify_len), hashed))
