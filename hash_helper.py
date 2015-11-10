@@ -141,4 +141,4 @@ if __name__ == '__main__':
     else:
         hashed = get_file_hash(args.file.name, args.hash)
 
-    print('\n{}'.format(hashed))
+    print('\n{}: {}'.format(args.hash, hashed))
