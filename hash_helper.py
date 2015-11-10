@@ -138,8 +138,8 @@ if __name__ == '__main__':
     hash_options   = set(['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32'])
     desired_hashes = hash_options if args.hash == 'all' else set(args.hash.split(','))
 
-    valid_hashes   = desired_hashes & hash_options
-    invalid_hashes = desired_hashes - hash_options
+    valid_hashes   = sorted(desired_hashes & hash_options)
+    invalid_hashes = sorted(desired_hashes - hash_options)
 
     if invalid_hashes:
         print('\nThe following hash functions are not valid: {}'.format(','.join(invalid_hashes)))
