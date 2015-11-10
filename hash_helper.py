@@ -22,7 +22,7 @@ class PyHashHelperParser(argparse.ArgumentParser):
         self.add_argument('-s', '--string', type=str, required=False)
 
         hash_choices = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32']
-        self.add_argument('-x', '--hash', type=str, choices=hash_choices, required=True)
+        self.add_argument('-x', '--hash', type=str, required=True)
 
 
     def error(self, message):
@@ -136,9 +136,17 @@ if __name__ == '__main__':
         print('\nMust provide either a file or a string literal to be hashed.')
         sys.exit(2)
 
-    if args.string:
-        hashed = get_string_hash(args.string, args.hash)
-    else:
-        hashed = get_file_hash(args.file.name, args.hash)
+    desired_hashes = args.hash.split(',')
+    justify_len = max(len(h) for h in desired_hashes)
 
-    print('\n{}: {}'.format(args.hash, hashed))
+    if args.string:
+        target = args.string
+        target_type_func = get_string_hash
+    else:
+        target = args.file.name
+        target_type_func = get_file_hash
+
+    print()
+    for hash_func in args.hash.split(','):
+        hashed = target_type_func(target, hash_func)
+        print('{}: {}'.format(hash_func.rjust(justify_len), hashed))
