@@ -142,7 +142,11 @@ if __name__ == '__main__':
     invalid_hashes = sorted(desired_hashes - hash_options)
 
     if invalid_hashes:
-        print('\nThe following hash functions are not valid: {}'.format(','.join(invalid_hashes)))
+        print('\nThe following hash algorithms are not valid: {}'.format(', '.join(invalid_hashes)))
+
+    if not valid_hashes:
+        print('\nNo valid hash algorithms were supplied. Exiting...')
+        sys.exit(2)
 
     justify_len = max(len(h) for h in valid_hashes)
 
