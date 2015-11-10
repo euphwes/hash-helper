@@ -56,3 +56,14 @@ adler32: e7741d04
  sha384: 29b9132b1d34a7a4a9a157703465934a839815a21f264f77bd655934a320ce347ca3d610739047918e9190d8ce795a99
  sha512: 7bcb83528360d00ada62be2f8c582514e4ba10b205ad8763264d765c1b3a3724b8992e22e0ed470466dc488e2cbb805753f43dd5ee7f994042bfc15126a1de5d
 ```
+
+#### Uppercase vs lowercase
+
+By default, PyHashHelper will display the hex representation of the hashes in lowercase. To display these values in uppercase, simply pass the optional `-u` flag.
+
+```
+$ python hash_helper.py -s test -x sha1,sha224 -u
+
+  sha1: A94A8FE5CCB19BA61C4C0873D391E987982FBBD3
+sha224: 90A3ED9E32B2AAF4C61C410EB925426119E1A9DC53D4286ADE99A809
+```
