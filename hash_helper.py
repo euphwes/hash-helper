@@ -25,6 +25,8 @@ class PyHashHelperParser(argparse.ArgumentParser):
         hash_help = "Valid choices are: {}".format(', '.join(choices))
         self.add_argument('-x', '--hash', type=str, required=True, help=hash_help)
 
+        self.add_argument('-u', '--upper', dest='upper', action='store_true', required=False, help='If you want the output in uppercase')
+
 
     def error(self, message):
         """
@@ -162,4 +164,6 @@ if __name__ == '__main__':
     print()
     for hash_func in valid_hashes:
         hashed = target_type_func(target, hash_func)
+        if args.upper:
+            hashed = hashed.upper()
         print('{}: {}'.format(hash_func.rjust(justify_len), hashed))
