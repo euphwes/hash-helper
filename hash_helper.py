@@ -135,8 +135,8 @@ if __name__ == '__main__':
         print('\nMust provide either a file or a string literal to be hashed.')
         sys.exit(2)
 
-    desired_hashes = set(args.hash.split(','))
     hash_options   = set(['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32'])
+    desired_hashes = hash_options if args.hash == 'all' else set(args.hash.split(','))
 
     valid_hashes   = desired_hashes & hash_options
     invalid_hashes = desired_hashes - hash_options
