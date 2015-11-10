@@ -21,7 +21,9 @@ class PyHashHelperParser(argparse.ArgumentParser):
         self.add_argument('-f', '--file', type=argparse.FileType('r'), required=False)
         self.add_argument('-s', '--string', type=str, required=False)
 
-        self.add_argument('-x', '--hash', type=str, required=True)
+        choices = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32']
+        hash_help = "Valid choices are: {}".format(', '.join(choices))
+        self.add_argument('-x', '--hash', type=str, required=True, help=hash_help)
 
 
     def error(self, message):
