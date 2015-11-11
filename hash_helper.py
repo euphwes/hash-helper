@@ -22,8 +22,11 @@ class PyHashHelperParser(argparse.ArgumentParser):
         self.add_argument('-f', '--file', type=argparse.FileType('r'), required=False)
         self.add_argument('-s', '--string', type=str, required=False)
 
-        hash_help = "Valid choices are: {}".format(', '.join(HASH_CHOICES))
-        self.add_argument('-x', '--hash', type=str, required=True, help=hash_help)
+        hash_choice_group = self.add_mutually_exclusive_group(required=True)
+        hash_help = 'Valid choices are: {}'.format(', '.join(HASH_CHOICES))
+        hash_choice_group.add_argument('-x', '--hash', type=str, help=hash_help)
+        hash_choice_group.add_argument('-a', '--all', dest='all', action='store_true', help='For all hash algorithms')
+
         self.add_argument('-u', '--upper', dest='upper', action='store_true', required=False, help='If you want the output in uppercase')
 
 
@@ -124,7 +127,31 @@ def perform_hashlib_hash(hash_function, target):
             hash.update(data)
         return hash.hexdigest()
 
-#----------------------------------------------------------------------
+
+def validate_hash_choice(args):
+    """
+    Validates the hash algorithm(s) selected by the user, and returns the list of valid algs.
+    """
+
+    hash_options = set(HASH_CHOICES)
+
+    if args.all:
+        return sorted(hash_options)
+
+    else:
+        desired_hashes = set(args.hash.split(','))
+        invalid_hashes = sorted(desired_hashes - hash_options)
+        valid_hashes   = sorted(desired_hashes & hash_options)
+
+        if invalid_hashes:
+            print('\nThe following hash algorithms are not valid: {}'.format(', '.join(invalid_hashes)))
+
+        if not valid_hashes:
+            sys.exit(2)
+
+        return valid_hashes
+
+#-------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
 
@@ -134,20 +161,9 @@ if __name__ == '__main__':
         print('\nMust provide either a file or a string literal to be hashed.')
         sys.exit(2)
 
-    hash_options   = set(HASH_CHOICES)
-    desired_hashes = hash_options if args.hash == 'all' else set(args.hash.split(','))
+    desired_hashes = validate_hash_choice(args)
 
-    valid_hashes   = sorted(desired_hashes & hash_options)
-    invalid_hashes = sorted(desired_hashes - hash_options)
-
-    if invalid_hashes:
-        print('\nThe following hash algorithms are not valid: {}'.format(', '.join(invalid_hashes)))
-
-    if not valid_hashes:
-        print('\nNo valid hash algorithms were provided. Exiting...')
-        sys.exit(2)
-
-    justify_len = max(len(h) for h in valid_hashes)
+    justify_len = max(len(h) for h in desired_hashes)
 
     if args.string:
         target = args.string
@@ -157,7 +173,7 @@ if __name__ == '__main__':
         target_type_func = get_file_hash
 
     print()
-    for hash_func in valid_hashes:
+    for hash_func in desired_hashes:
         hashed = target_type_func(target, hash_func)
         if args.upper:
             hashed = hashed.upper()
