@@ -36,7 +36,7 @@ class PyHashHelperParser(argparse.ArgumentParser):
         Writes an error message and the help message to stderr then exits with error.
         """
         sys.stderr.write("\nError: {}\n\n".format(message))
-        self.print_help()
+        self.print_usage()
         sys.exit(2)
 
 #-------------------------------------------------------------------------------------------------
