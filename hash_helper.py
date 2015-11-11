@@ -17,7 +17,9 @@ class PyHashHelperParser(argparse.ArgumentParser):
     """
 
     def __init__(self):
-        super().__init__(description='Calculates the hash of a string literal or a file')
+        desc = 'Calculates the hash of a string literal or a file'
+        rthf = argparse.RawTextHelpFormatter
+        super().__init__(formatter_class=rthf, description=desc)
 
         target_type_group = self.add_mutually_exclusive_group(required=True)
         target_type_group.add_argument('-f', '--file', type=str)
