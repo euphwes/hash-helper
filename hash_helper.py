@@ -19,8 +19,9 @@ class PyHashHelperParser(argparse.ArgumentParser):
     def __init__(self):
         super().__init__(description='Calculates the hash of a string literal or a file')
 
-        self.add_argument('-f', '--file', type=argparse.FileType('r'), required=False)
-        self.add_argument('-s', '--string', type=str, required=False)
+        target_type_group = self.add_mutually_exclusive_group(required=True)
+        target_type_group.add_argument('-f', '--file', type=str)
+        target_type_group.add_argument('-s', '--string', type=str)
 
         hash_choice_group = self.add_mutually_exclusive_group(required=True)
         hash_help = 'Valid choices are: {}'.format(', '.join(HASH_CHOICES))
@@ -169,7 +170,7 @@ if __name__ == '__main__':
         target = args.string
         target_type_func = get_string_hash
     else:
-        target = args.file.name
+        target = args.file
         target_type_func = get_file_hash
 
     print()
