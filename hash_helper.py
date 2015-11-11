@@ -174,8 +174,12 @@ if __name__ == '__main__':
         target_type_func = get_file_hash
 
     print()
-    for hash_func in desired_hashes:
-        hashed = target_type_func(target, hash_func)
-        if args.upper:
-            hashed = hashed.upper()
-        print('{}: {}'.format(hash_func.rjust(justify_len), hashed))
+    try:
+        for hash_func in desired_hashes:
+            hashed = target_type_func(target, hash_func)
+            if args.upper:
+                hashed = hashed.upper()
+            print('{}: {}'.format(hash_func.rjust(justify_len), hashed))
+
+    except FileNotFoundError:
+        print("Cannot find file '{}'.".format(args.file))
