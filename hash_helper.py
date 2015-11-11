@@ -6,6 +6,7 @@ import argparse
 #-------------------------------------------------------------------------------------------------
 
 BLOCK_SIZE = 1024*1024*256
+HASH_CHOICES = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32']
 
 #-------------------------------------------------------------------------------------------------
 
@@ -21,10 +22,8 @@ class PyHashHelperParser(argparse.ArgumentParser):
         self.add_argument('-f', '--file', type=argparse.FileType('r'), required=False)
         self.add_argument('-s', '--string', type=str, required=False)
 
-        choices = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32']
-        hash_help = "Valid choices are: {}".format(', '.join(choices))
+        hash_help = "Valid choices are: {}".format(', '.join(HASH_CHOICES))
         self.add_argument('-x', '--hash', type=str, required=True, help=hash_help)
-
         self.add_argument('-u', '--upper', dest='upper', action='store_true', required=False, help='If you want the output in uppercase')
 
 
@@ -47,7 +46,7 @@ def get_string_hash(target, which_hash):
     target = target.encode('utf-8')
 
     function_map = dict(zip(
-        ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32'],
+        HASH_CHOICES,
         [h.md5, h.sha1, h.sha224, h.sha256, h.sha384, h.sha512, z.adler32, z.crc32]
     ))
 
@@ -89,7 +88,6 @@ def perform_crc32_hash(target):
         prev = 0
         for line in target:
             prev = z.crc32(line, prev)
-
         return format(prev & 0xFFFFFFFF, 'x')
 
 
@@ -98,9 +96,8 @@ def perform_adler32_hash(target):
     Perform the Adler32 hash against the target file. Return the result in hexadecimal form.
     """
 
-    hash_sum = 1
     with open(target, 'rb') as target:
-
+        hash_sum = 1
         while True:
             data = target.read(BLOCK_SIZE)
             if not data:
@@ -108,7 +105,6 @@ def perform_adler32_hash(target):
             hash_sum = z.adler32(data, hash_sum)
             if hash_sum < 0:
                 hash_sum += 2**32
-
         return format(hash_sum, 'x')
 
 
@@ -126,7 +122,6 @@ def perform_hashlib_hash(hash_function, target):
             if not data:
                 break
             hash.update(data)
-
         return hash.hexdigest()
 
 #----------------------------------------------------------------------
@@ -139,7 +134,7 @@ if __name__ == '__main__':
         print('\nMust provide either a file or a string literal to be hashed.')
         sys.exit(2)
 
-    hash_options   = set(['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'adler32', 'crc32'])
+    hash_options   = set(HASH_CHOICES)
     desired_hashes = hash_options if args.hash == 'all' else set(args.hash.split(','))
 
     valid_hashes   = sorted(desired_hashes & hash_options)
@@ -149,7 +144,7 @@ if __name__ == '__main__':
         print('\nThe following hash algorithms are not valid: {}'.format(', '.join(invalid_hashes)))
 
     if not valid_hashes:
-        print('\nNo valid hash algorithms were supplied. Exiting...')
+        print('\nNo valid hash algorithms were provided. Exiting...')
         sys.exit(2)
 
     justify_len = max(len(h) for h in valid_hashes)
