@@ -38,14 +38,20 @@ adler32: d1c4348c
 
 #### Hashing a target with multiple algorithms
 
+You can specify multiple hash algorithms by separating them with commas as the argument to the `-x`\\`--hash` flag.
+
 ```
 $ python hash_helper.py -f ".gitignore" -x sha1,sha256,sha384
 
   sha1: da7f06f54bf75659d1106c947f551f12fe65de59
 sha256: f42341552b7e0886f8101e00ed55c757db2e1dfb656e5256eab6555450b2a8c3
 sha384: b5d2415714cf5f5047403c8cfdbfe990bc272b74e7effecd897a0f7e05120c9aec457a3cc06e1ddf36e711e0f88e0e1d
+```
 
-$ python hash_helper.py -f "README.md" -x all
+Alternatively, you can specify running ALL hash algorithms by omitting `-x` and specifying `-a`\\`-all`
+
+```
+$ python hash_helper.py -f "README.md" -a
 
 adler32: e7741d04
   crc32: 9009d78b
