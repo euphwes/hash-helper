@@ -70,7 +70,7 @@ def get_file_hash(target, which_hash):
     Runs the target file through the desired hashing function. Ensures a hex result is returned.
     """
 
-    hashlib_flags = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512']
+    hashlib_flags = HASH_CHOICES[:6]
     hashlib_funcs = [h.md5, h.sha1, h.sha224, h.sha256, h.sha384, h.sha512]
     hashlib_map = dict(zip(hashlib_flags, hashlib_funcs))
 
